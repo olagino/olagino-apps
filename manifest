@@ -3,7 +3,7 @@ name: Fertigungsstrasse
 category: Buildings
 author: Leon Schnieber (olagino)
 icon: icon.png
-desc: Programm für die Fertigungsstraße
+desc: Programm für die Fertigungsstrasse
 url: http://leon.home-webserver.de/wiki/doku.php?id=fischertechnik:start
 exec: script.py
 managed: yes
