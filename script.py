@@ -6,6 +6,7 @@ import ftrobopy
 import numpy
 import cv2
 import zbarlight
+import time
 
 from TxtStyle import *
 from PIL import Image
@@ -145,7 +146,7 @@ class FtcGuiApplication(TxtApplication):
     # it will be called whenever the user clicks the button
     def on_button_clicked(self):
         self.txt.setPwm(0,512)
-        delay(1000)
+        time.sleep(1)
         self.txt.setPwm(0,0)
 
 
