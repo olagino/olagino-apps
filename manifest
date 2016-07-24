@@ -8,5 +8,5 @@ url: http://leon.home-webserver.de/wiki/doku.php?id=fischertechnik:start
 exec: script.py
 managed: yes
 uuid: 2c4f7f14-5199-11e6-beb8-9e71128cae77
-version: 1
+version: beta-1
 firmware: 0.9
