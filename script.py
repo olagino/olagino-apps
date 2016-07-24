@@ -92,23 +92,64 @@ class FtcGuiApplication(TxtApplication):
             self.txt = None                                  # set TXT to "None" of connection failed
 
         vbox = QVBoxLayout()
+        if not self.txt:
+            # display error of TXT could no be connected
+            err_msg = QLabel("Error connecting IO server")   # create the error message label
+            err_msg.setWordWrap(True)                        # allow it to wrap over several lines
+            err_msg.setAlignment(Qt.AlignCenter)             # center it horizontally
+            vbox.addWidget(err_msg)                      # attach it to the main output area
+        else:
+            # initialization went fine. So the main gui
+            # is being drawn
+            button = QPushButton("Switch Ausgang 1")         # create a button labeled "Toggle O1"
+            button.clicked.connect(self.on_button_clicked)   # connect button to event handler
+            vbox.addWidget(button)                       # attach it to the main output area
 
-        self.cw = CamWidget()
-
-        vbox.addWidget(self.cw)
-
-        self.lbl = QLabel()
-        self.lbl.setObjectName("smalllabel")
-        self.lbl.setAlignment(Qt.AlignCenter)
-        self.lbl.setWordWrap(True)
-        vbox.addWidget(self.lbl)
+            self.cw = CamWidget()
 
 
-        self.connect( self.cw, SIGNAL("code(QString)"),
-                      self.on_code_detected )
 
+            vbox.addWidget(self.cw)
+
+            self.lbl = QLabel()
+            self.lbl.setObjectName("smalllabel")
+            self.lbl.setAlignment(Qt.AlignCenter)
+            self.lbl.setWordWrap(True)
+            vbox.addWidget(self.lbl)
+
+
+            self.connect( self.cw, SIGNAL("code(QString)"),
+                          self.on_code_detected )
+
+
+
+        # configure all TXT outputs to normal mode
+            M = [ self.txt.C_OUTPUT, self.txt.C_OUTPUT, self.txt.C_OUTPUT, self.txt.C_OUTPUT ]
+            I = [ (self.txt.C_SWITCH, self.txt.C_DIGITAL ),
+                  (self.txt.C_SWITCH, self.txt.C_DIGITAL ),
+                  (self.txt.C_SWITCH, self.txt.C_DIGITAL ),
+                  (self.txt.C_SWITCH, self.txt.C_DIGITAL ),
+                  (self.txt.C_SWITCH, self.txt.C_DIGITAL ),
+                  (self.txt.C_SWITCH, self.txt.C_DIGITAL ),
+                  (self.txt.C_SWITCH, self.txt.C_DIGITAL ),
+                  (self.txt.C_SWITCH, self.txt.C_DIGITAL ) ]
+            self.txt.setConfig(M, I)
+            self.txt.updateConfig()
+
+
+        w.centralWidget.setLayout(vbox)
         w.show()
         self.exec_()
+
+    # an event handler for our button (called a "slot" in qt)
+    # it will be called whenever the user clicks the button
+    def on_button_clicked(self):
+        self.txt.setPwm(0,512)
+        delay(1000)
+        self.txt.setPwm(0,0)
+
+
+
 
 
     def on_code_detected(self,str):
