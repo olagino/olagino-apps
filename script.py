@@ -137,6 +137,13 @@ class FtcGuiApplication(TxtApplication):
             self.txt.setConfig(M, I)
             self.txt.updateConfig()
 
+            self.Motor1 = self.txt.motor(1)
+
+            #Init des ersten Schiebers
+            self.Motor1.setSpeed(-512)
+            while True:
+                if self.txt.input(1).state() == 1:
+                    self.Motor1.stop()
 
         w.centralWidget.setLayout(vbox)
         w.show()
@@ -145,13 +152,12 @@ class FtcGuiApplication(TxtApplication):
     # an event handler for our button (called a "slot" in qt)
     # it will be called whenever the user clicks the button
     def on_button_clicked(self):
-        self.txt.motor(0).setSpeed(512)
-        time.sleep(1)
-        self.txt.motor(0).setSpeed(-512)
-        time.sleep(1)
-        self.txt.motor(0).stop()
 
-
+        self.Motor1.setSpeed(512)
+        time.sleep(1)
+        self.Motor1.setSpeed(-512)
+        time.sleep(1)
+        self.Motor1.stop()
 
     def on_code_detected(self,str):
         self.lbl.setText(str)
