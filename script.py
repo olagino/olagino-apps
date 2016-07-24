@@ -85,6 +85,9 @@ class FtcGuiApplication(TxtApplication):
     def __init__(self, args):
         TxtApplication.__init__(self, args)
 
+        #init Variables
+
+        self.code = 0
         # create the empty main window
         w = TxtWindow("Fertigung")
         try:
@@ -108,8 +111,6 @@ class FtcGuiApplication(TxtApplication):
 
             self.cw = CamWidget()
 
-
-
             vbox.addWidget(self.cw)
 
             self.lbl = QLabel()
@@ -120,7 +121,7 @@ class FtcGuiApplication(TxtApplication):
 
 
             self.connect( self.cw, SIGNAL("code(QString)"), self.on_code_detected )
-            print(self.cw.str)
+            print(self.code)
 
 
         # configure all TXT outputs to normal mode
@@ -144,16 +145,17 @@ class FtcGuiApplication(TxtApplication):
     # an event handler for our button (called a "slot" in qt)
     # it will be called whenever the user clicks the button
     def on_button_clicked(self):
-        self.txt.setPwm(0,512)
+        self.txt.motor(0).setSpeed(512)
         time.sleep(1)
-        self.txt.setPwm(0,0)
-
-
+        self.txt.motor(0).setSpeed(-512)
+        time.sleep(1)
+        self.txt.motor(0).stop()
 
 
 
     def on_code_detected(self,str):
         self.lbl.setText(str)
+        self.code = str
 #        self.hide_timer.start(1000)  # hide after 1 second
 
     def on_code_timeout(self):
