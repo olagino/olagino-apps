@@ -17,14 +17,14 @@ class FtcGuiApplication(TxtApplication):
         except:
             txt = None                                       # set TXT to "None" of connection failed
 
-    if not txt:
+            if not txt:
         # display error of TXT could no be connected
             # error messages is centered and may span
             # over several lines
-        err_msg = QLabel("Error connecting IO server")   # create the error message label
-            err_msg.setWordWrap(True)                        # allow it to wrap over several lines
-            err_msg.setAlignment(Qt.AlignCenter)             # center it horizontally
-            w.setCentralWidget(err_msg)                      # attach it to the main output area
+                err_msg = QLabel("Error connecting IO server")   # create the error message label
+                err_msg.setWordWrap(True)                        # allow it to wrap over several lines
+                err_msg.setAlignment(Qt.AlignCenter)             # center it horizontally
+                w.setCentralWidget(err_msg)                      # attach it to the main output area
         else:
             # initialization went fine. So the main gui
             # is being drawn
