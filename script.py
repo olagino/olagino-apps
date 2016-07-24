@@ -119,13 +119,12 @@ class FtcGuiApplication(TxtApplication):
             vbox.addWidget(self.lbl)
 
 
-            self.connect( self.cw, SIGNAL("code(QString)"),
-                          self.on_code_detected )
-
+            self.connect( self.cw, SIGNAL("code(QString)"), self.on_code_detected )
+            print(self.cw.str)
 
 
         # configure all TXT outputs to normal mode
-            M = [ self.txt.C_OUTPUT, self.txt.C_OUTPUT, self.txt.C_OUTPUT, self.txt.C_OUTPUT ]
+            M = [ self.txt.C_MOTOR, self.txt.C_MOTOR, self.txt.C_MOTOR, self.txt.C_MOTOR ]
             I = [ (self.txt.C_SWITCH, self.txt.C_DIGITAL ),
                   (self.txt.C_SWITCH, self.txt.C_DIGITAL ),
                   (self.txt.C_SWITCH, self.txt.C_DIGITAL ),
