@@ -140,10 +140,9 @@ class FtcGuiApplication(TxtApplication):
             self.Motor1 = self.txt.motor(1)
 
             #Init des ersten Schiebers
-            self.Motor1.setSpeed(-512)
-            while True:
-                if self.txt.input(1).state() == 1:
-                    self.Motor1.stop()
+            while not self.txt.input(1).state() == 1:
+                self.Motor1.setSpeed(-512)
+            self.Motor1.stop()
 
         w.centralWidget.setLayout(vbox)
         w.show()
@@ -153,11 +152,13 @@ class FtcGuiApplication(TxtApplication):
     # it will be called whenever the user clicks the button
     def on_button_clicked(self):
 
-        self.Motor1.setSpeed(512)
-        time.sleep(1)
-        self.Motor1.setSpeed(-512)
-        time.sleep(1)
+        while not self.txt.input(2).state() == 1:
+            self.Motor1.setSpeed(512)
         self.Motor1.stop()
+        while not self.txt.input(1).state() == 1:
+            self.Motor1.setSpeed(-512)
+        self.Motor1.stop()
+
 
     def on_code_detected(self,str):
         self.lbl.setText(str)
