@@ -10,7 +10,7 @@ class FtcGuiApplication(TxtApplication):
         TxtApplication.__init__(self, args)
 
         # create the empty main window
-        w = TxtWindow("Tut_3b")
+        w = TxtWindow("Fertigungsstraße")
 
         try:
             txt = ftrobopy.ftrobopy("localhost", 65000)      # connect to TXT's IO controller
