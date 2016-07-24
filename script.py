@@ -100,7 +100,7 @@ class FtcGuiApplication(TxtApplication):
         else:
             # initialization went fine. So the main gui
             # is being drawn
-            button = QPushButton("Toggle O1")                # create a button labeled "Toggle O1"
+            button = QPushButton("Switch Ausgang 1")         # create a button labeled "Toggle O1"
             button.clicked.connect(self.on_button_clicked)   # connect button to event handler
             w.setCentralWidget(button)                       # attach it to the main output area
 
@@ -118,7 +118,7 @@ class FtcGuiApplication(TxtApplication):
             self.lbl.setAlignment(Qt.AlignCenter)
             self.lbl.setWordWrap(True)
             vbox.addWidget(self.lbl)
-            vbox.addStretch()
+
 
             self.connect( self.cw, SIGNAL("code(QString)"),
                           self.on_code_detected )
