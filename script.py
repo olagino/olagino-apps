@@ -147,6 +147,7 @@ class FtcGuiApplication(TxtApplication):
             self.Motor1.setSpeed(-512)
         self.Motor1.stop()
 
+        
 
         self.exec_()
 
@@ -160,15 +161,16 @@ class FtcGuiApplication(TxtApplication):
         while not self.txt.input(1).state() == 1:
             self.Motor1.setSpeed(-512)
         self.Motor1.stop()
+        self.code = 0
 
 
     def on_code_detected(self,str):
         self.lbl.setText(str)
         self.code = str
 
-
     def on_code_timeout(self):
         self.lbl.setText("")
+        self.code = 0
 
 if __name__ == "__main__":
     FtcGuiApplication(sys.argv)
