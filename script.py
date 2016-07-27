@@ -105,8 +105,8 @@ class FtcGuiApplication(TxtApplication):
         else:
             # initialization went fine. So the main gui
             # is being drawn
-            button = QPushButton("Switch Ausgang 1")         # create a button labeled "Toggle O1"
-            button.clicked.connect(self.on_button_clicked)   # connect button to event handler
+            button = QPushButton("Neue Box")         # create a button labeled "Toggle O1"
+            button.clicked.connect(self.new_box_clicked)   # connect button to event handler
             vbox.addWidget(button)                       # attach it to the main output area
 
             self.cw = CamWidget()
@@ -119,13 +119,11 @@ class FtcGuiApplication(TxtApplication):
             self.lbl.setWordWrap(True)
             vbox.addWidget(self.lbl)
 
-
             self.connect( self.cw, SIGNAL("code(QString)"), self.on_code_detected )
             print(self.code)
 
-
         # configure all TXT outputs to normal mode
-            M = [ self.txt.C_MOTOR, self.txt.C_MOTOR, self.txt.C_MOTOR, self.txt.C_MOTOR ]
+            M = [ self.txt.C_MOTOR, self.txt.C_MOTOR, self.txt.C_MOTOR, self.txt.C_OUTPUT ]
             I = [ (self.txt.C_SWITCH, self.txt.C_DIGITAL ),
                   (self.txt.C_SWITCH, self.txt.C_DIGITAL ),
                   (self.txt.C_SWITCH, self.txt.C_DIGITAL ),
@@ -136,40 +134,78 @@ class FtcGuiApplication(TxtApplication):
                   (self.txt.C_SWITCH, self.txt.C_DIGITAL ) ]
             self.txt.setConfig(M, I)
             self.txt.updateConfig()
-
-            self.Motor1 = self.txt.motor(1)
+            #Init Motoren
+            self.Motor1 = self.txt.motor(1) #Motor Schieber
+            self.Motor2 = self.txt.motor(2) #Motor Arbeitstakte
+            self.Motor3 = self.txt.motor(3) #Motor unbelegt
+            self.Compressor = self.txt.output(7) #Kompressor
+            self.Valve1 = self.txt.output(8) #Ventil
 
             #Init des ersten Schiebers
 
         w.centralWidget.setLayout(vbox)
         w.show()
+        #Modell zurücksetzen
         while not self.txt.input(1).state() == 1:
             self.Motor1.setSpeed(-512)
         self.Motor1.stop()
+        while not self.txt.input(3).state() == 1:
+            self.Motor2.setSpeed(-512)
+        self.Motor2.stop()
 
-        
+        #Timer für die Weitergabe
+        timer = QTimer(self)
+        timer.timeout.connect(self.wait_for_code)
+        timer.start(10)
+        #Timer Versuch 2
 
         self.exec_()
+        #erste Box ausgeben
+        self.new_box_clicked()
+
 
     # an event handler for our button (called a "slot" in qt)
     # it will be called whenever the user clicks the button
-    def on_button_clicked(self):
-
+    def new_box_clicked(self):
+        self.code = 0
+        #Luft ablassen
+        self.Valve1.setLevel(0)
+        #Schieber 1 vorfahren
         while not self.txt.input(2).state() == 1:
             self.Motor1.setSpeed(512)
         self.Motor1.stop()
+        #Schieber 2 an Startposition fahren
+        while not self.txt.input(3).state() == 1:
+            self.Motor2.setSpeed(-512)
+        self.Motor2.stop()
+        self.Compressor.setLevel(512)
+        time.sleep(0.1)
+        self.Valve1.setLevel(512)
+        time.sleep(0.3)
+        self.Compressor.setLevel(0)
+        #Schieber 1 zurückfahren
         while not self.txt.input(1).state() == 1:
             self.Motor1.setSpeed(-512)
         self.Motor1.stop()
-        self.code = 0
+        #Box zu Position 2 fahren
+    #    while not self.txt.input(4).state() == 1:
+    #        self.Motor2.setSpeed(512)
+    #    self.Motor2.stop()
 
+    def wait_for_code(self):
+        if not self.code == 0:
+            while not self.txt.input(4).state() == 1:
+                self.Motor2.setSpeed(512)
+            self.Motor2.stop()
+            self.code = 0
 
     def on_code_detected(self,str):
-        self.lbl.setText(str)
         self.code = str
+        self.lbl.setText(self.code)
+
 
     def on_code_timeout(self):
-        self.lbl.setText("")
+        self.lbl.setText("-/-")
         self.code = 0
 
 if __name__ == "__main__":
