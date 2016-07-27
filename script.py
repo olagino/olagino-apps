@@ -154,10 +154,16 @@ class FtcGuiApplication(TxtApplication):
         self.Motor2.stop()
 
         #Timer für die Weitergabe
+        self.code = 0
         timer = QTimer(self)
         timer.timeout.connect(self.wait_for_code)
         timer.start(10)
         #Timer Versuch 2
+        self.loop_init = 0
+
+        timer_2 = QTimer(self)
+        timer.timeout.connect(self.wait_for_loop)
+        timer.start(10)
 
         self.exec_()
         #erste Box ausgeben
@@ -167,37 +173,40 @@ class FtcGuiApplication(TxtApplication):
     # an event handler for our button (called a "slot" in qt)
     # it will be called whenever the user clicks the button
     def new_box_clicked(self):
-        self.code = 0
-        #Luft ablassen
-        self.Valve1.setLevel(0)
-        #Schieber 1 vorfahren
-        while not self.txt.input(2).state() == 1:
-            self.Motor1.setSpeed(512)
-        self.Motor1.stop()
-        #Schieber 2 an Startposition fahren
-        while not self.txt.input(3).state() == 1:
-            self.Motor2.setSpeed(-512)
-        self.Motor2.stop()
-        self.Compressor.setLevel(512)
-        time.sleep(0.1)
-        self.Valve1.setLevel(512)
-        time.sleep(0.3)
-        self.Compressor.setLevel(0)
-        #Schieber 1 zurückfahren
-        while not self.txt.input(1).state() == 1:
-            self.Motor1.setSpeed(-512)
-        self.Motor1.stop()
-        #Box zu Position 2 fahren
-    #    while not self.txt.input(4).state() == 1:
-    #        self.Motor2.setSpeed(512)
-    #    self.Motor2.stop()
+        self.loop_init = 1
+
+    def wait_for_loop(self):
+        if self.loop_init == 1:
+            self.loop_init = 0
+            self.code = 0
+            #Luft ablassen
+            self.Valve1.setLevel(0)
+            #Schieber 1 vorfahren
+            while not self.txt.input(2).state() == 1:
+                self.Motor1.setSpeed(512)
+            self.Motor1.stop()
+            #Schieber 2 an Startposition fahren
+            while not self.txt.input(3).state() == 1:
+                self.Motor2.setSpeed(-512)
+            self.Motor2.stop()
+            self.Compressor.setLevel(512)
+            time.sleep(0.1)
+            self.Valve1.setLevel(512)
+            time.sleep(0.3)
+            self.Compressor.setLevel(0)
+            #Schieber 1 zurückfahren
+            while not self.txt.input(1).state() == 1:
+                self.Motor1.setSpeed(-512)
+            self.Motor1.stop()
 
     def wait_for_code(self):
         if not self.code == 0:
             while not self.txt.input(4).state() == 1:
                 self.Motor2.setSpeed(512)
             self.Motor2.stop()
+            self.code_temp = self.code
             self.code = 0
+
 
     def on_code_detected(self,str):
         self.code = str
