@@ -74,7 +74,7 @@ class CamWidget(QWidget):
 
         if not self.cap.isOpened():
             painter.drawText(QRect(QPoint(0,0), self.size()),
-                             Qt.AlignCenter, "No camera");
+                             Qt.AlignCenter, "No camera")
         else:
             self.grab()
             painter.drawImage(0,0,self.mQImage)
@@ -137,7 +137,7 @@ class FtcGuiApplication(TxtApplication):
             #Init Motoren
             self.Motor1 = self.txt.motor(1) #Motor Schieber
             self.Motor2 = self.txt.motor(2) #Motor Arbeitstakte
-            self.Motor3 = self.txt.motor(3) #Motor unbelegt
+            self.Motor3 = self.txt.motor(3) #Motor und Ventil 2, je nachdem, wo sich das Werkstück befindet.
             self.Compressor = self.txt.output(7) #Kompressor
             self.Valve1 = self.txt.output(8) #Ventil
 
@@ -152,6 +152,8 @@ class FtcGuiApplication(TxtApplication):
         while not self.txt.input(3).state() == 1:
             self.Motor2.setSpeed(-512)
         self.Motor2.stop()
+
+        thread = QThread()
 
         #Timer für die Weitergabe
         self.code = 0
@@ -195,17 +197,37 @@ class FtcGuiApplication(TxtApplication):
             time.sleep(0.3)
             self.Compressor.setLevel(0)
             #Schieber 1 zurückfahren
-            while not self.txt.input(1).state() == 1:
+            while self.txt.input(1).state() == 0:
                 self.Motor1.setSpeed(-512)
             self.Motor1.stop()
 
     def wait_for_code(self):
         if not self.code == 0:
-            while not self.txt.input(4).state() == 1:
+            while self.txt.input(4).state() == 0:
                 self.Motor2.setSpeed(512)
             self.Motor2.stop()
             self.code_temp = self.code
             self.code = 0
+
+            time.sleep(1)
+
+            #Metallkugel ausgeben
+            self.Compressor.setLevel(512)
+            self.Motor3.setSpeed(-512)
+            time.sleep(1)
+            self.Motor3.stop()
+            self.Compressor.setLevel(0)
+
+            while self.txt.input(5).state() == 1:
+                self.Motor2.setSpeed(512)
+            self.Motor2.stop()
+
+            self.Valve1.setLevel(0)
+            self.Motor2.setSpeed(-512)
+            time.sleep(2)
+            self.Motor2.stop()
+
+
 
 
     def on_code_detected(self,str):
